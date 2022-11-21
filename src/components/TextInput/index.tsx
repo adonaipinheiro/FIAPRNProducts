@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  TextInput as RNTextInput,
-  TextInputProps,
-  ViewStyle,
-} from 'react-native';
+import {Text, TextInput as RNTextInput, TextInputProps} from 'react-native';
 
 // Styles
 import styles from './styles';
@@ -14,18 +9,14 @@ interface ITextInput extends TextInputProps {
 }
 
 export default function TextInput(props: ITextInput) {
-  const errorStyle: ViewStyle = {
-    borderColor: 'red',
-  };
-
   return (
     <>
       <RNTextInput
-        style={[styles.textInput, props.messageError ? errorStyle : null]}
+        style={styles({messageError: props.messageError}).textInput}
         {...props}
       />
       {props.messageError && (
-        <Text style={styles.errorText}>{props.messageError}</Text>
+        <Text style={styles({}).errorText}>{props.messageError}</Text>
       )}
     </>
   );

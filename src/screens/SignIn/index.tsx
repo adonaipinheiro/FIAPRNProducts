@@ -1,4 +1,3 @@
-import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {
   Image,
@@ -8,9 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {RouterStackProp} from '../../routes';
-// import useServices from '../../services/useServices';
 import TextInput from '../../components/TextInput';
 
 // Styles
@@ -18,47 +14,61 @@ import styles from './styles';
 
 // Images
 import {Logo} from '../../assets';
+import useSignIn from './hooks/useSignIn';
+import {Formik} from 'formik';
 
 export default function SignIn() {
-  const navigation = useNavigation<RouterStackProp>();
-  const insets = useSafeAreaInsets();
-  // const {signIn, loading} = useServices();
-
-  // const handleSignUp = () => {
-  //   // navigation.navigate('SignUp');
-  //   signIn('a3@a.com.br', 'Aj081209')
-  //     .then(r => {
-  //       console.log(r);
-  //     })
-  //     .catch(e => {
-  //       console.log(e.message);
-  //     });
-  // };
-
-  const handleSignUp = () => {
-    navigation.navigate('SignUp');
-  };
+  const {handleSignUp, handleSubmitForm, insets, LoginSchema} = useSignIn();
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>
-      <View style={styles.logoArea}>
-        <Image style={styles.logoImg} source={Logo} />
+      style={styles({}).container}>
+      <View style={styles({}).logoArea}>
+        <Image style={styles({}).logoImg} source={Logo} />
       </View>
-      <View style={styles.textInputArea}>
-        <TextInput placeholder="E-mail" keyboardType="email-address" />
-        <TextInput placeholder="Senha" secureTextEntry />
-      </View>
-      <View style={styles.buttonsArea}>
-        <TouchableOpacity style={styles.buttonSignIn}>
-          <Text style={styles.buttonSignInText}>Entrar</Text>
-        </TouchableOpacity>
-      </View>
+      <Formik
+        initialValues={{email: '', pass: ''}}
+        validationSchema={LoginSchema}
+        onSubmit={({email, pass}, {setSubmitting}) =>
+          handleSubmitForm(email, pass, setSubmitting)
+        }>
+        {({values, handleSubmit, errors, handleChange, isSubmitting}) => (
+          <>
+            <View style={styles({}).textInputArea}>
+              <TextInput
+                value={values.email}
+                onChangeText={handleChange('email')}
+                messageError={errors.email}
+                placeholder="E-mail"
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+              <TextInput
+                value={values.pass}
+                onChangeText={handleChange('pass')}
+                messageError={errors.pass}
+                placeholder="Senha"
+                secureTextEntry
+              />
+            </View>
+            <View style={styles({}).buttonsArea}>
+              <TouchableOpacity
+                disabled={isSubmitting}
+                onPress={handleSubmit}
+                style={styles({loading: isSubmitting}).buttonSignIn}>
+                <Text style={styles({}).buttonSignInText}>
+                  {isSubmitting ? 'Carregando...' : 'Entrar'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </Formik>
       <TouchableOpacity
         onPress={handleSignUp}
-        style={[styles.buttonSignUp, {bottom: insets.bottom}]}>
-        <Text style={styles.buttonSignUpText}>Cadastrar</Text>
+        style={styles({insets}).buttonSignUp}>
+        <Text style={styles({}).buttonSignUpText}>Cadastrar</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );

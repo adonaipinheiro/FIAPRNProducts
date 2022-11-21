@@ -1,17 +1,39 @@
 import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
 import {RouterStackProp} from '../../../routes';
 import useServices from '../../../services/useServices';
 import {CommonActions} from '@react-navigation/native';
+import * as Yup from 'yup';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 export default function useSignUp() {
   const {signUp, loading} = useServices();
   const navigation = useNavigation<RouterStackProp>();
 
-  const [name, setName] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const insets = useSafeAreaInsets();
+
+  const phoneRegex = /^(\d{2})\D*(\d{5}|\d{4})\D*(\d{4})$/;
+
+  const SignUpSchema = Yup.object().shape({
+    name: Yup.string().required('Campo obrigatório').trim(),
+    tel: Yup.string()
+      .required('Campo obrigatório')
+      .min(11, 'Número de telefone inválido')
+      .max(11, 'Número de telefone inválido')
+      .matches(phoneRegex, 'Número de telefone inválido')
+      .trim(),
+    email: Yup.string()
+      .email('Digite um e-mail válido')
+      .required('Campo obrigatório')
+      .trim(),
+    pass: Yup.string()
+      .min(8, 'A senha não atende os requisitos')
+      .required('Campo obrigatório')
+      .trim(),
+    confirmPass: Yup.string()
+      .oneOf([Yup.ref('pass'), null], 'As senhas não estão iguais')
+      .required('Campo obrigatório')
+      .trim(),
+  });
 
   const handleSignIn = () => {
     navigation.navigate('SignIn');
@@ -21,7 +43,13 @@ export default function useSignUp() {
     navigation.pop();
   };
 
-  const handleSignUp = () => {
+  const handleSubmitForm = (
+    name: string,
+    phone: string,
+    email: string,
+    password: string,
+    setSubmitting: (a: boolean) => void,
+  ) => {
     signUp(name, phone, email, password)
       .then(_ => {
         navigation.dispatch(
@@ -32,22 +60,17 @@ export default function useSignUp() {
         );
       })
       .catch(e => {
+        setSubmitting(false);
         console.log(e);
       });
   };
 
   return {
-    name,
-    setName,
-    phone,
-    setPhone,
-    email,
-    setEmail,
-    password,
-    setPassword,
+    handleSubmitForm,
     handleSignIn,
     handleGoBack,
     loading,
-    handleSignUp,
+    insets,
+    SignUpSchema,
   };
 }

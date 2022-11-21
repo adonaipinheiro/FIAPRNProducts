@@ -21,6 +21,8 @@ export default function useServices() {
       if (resp.status === 201) {
         throw Error('Usuário não encontrado');
       }
+
+      return resp.data;
     } catch (err) {
       throw err;
     } finally {
