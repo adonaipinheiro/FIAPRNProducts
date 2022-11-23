@@ -12,11 +12,11 @@ import MapView, {Marker} from 'react-native-maps';
 import styles from './styles';
 
 // Hooks
-import useProductDetail from './hooks/useProductDetail';
+import useFavoriteProductDetail from './hooks/useFavoriteProductDetail';
 
-export default function ProductDetail() {
+export default function FavoriteProductDetail() {
   const {loading, product, formatter, handleMakeFavorite, mapRef, coords} =
-    useProductDetail();
+    useFavoriteProductDetail();
 
   return (
     <SafeAreaView style={styles.container}>
