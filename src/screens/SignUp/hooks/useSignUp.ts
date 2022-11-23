@@ -1,9 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useNavigation} from '@react-navigation/native';
 import {RouterStackProp} from '../../../routes';
 import useServices from '../../../services/useServices';
 import {CommonActions} from '@react-navigation/native';
 import * as Yup from 'yup';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Alert} from 'react-native';
+import {useEffect} from 'react';
 
 export default function useSignUp() {
   const {signUp, loading} = useServices();
@@ -63,6 +67,23 @@ export default function useSignUp() {
         setSubmitting(false);
       });
   };
+
+  const handleToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      Alert.alert('Opa!', 'Parece que você já está logado');
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Dashboard'}],
+        }),
+      );
+    }
+  };
+
+  useEffect(() => {
+    handleToken();
+  }, []);
 
   return {
     handleSubmitForm,
