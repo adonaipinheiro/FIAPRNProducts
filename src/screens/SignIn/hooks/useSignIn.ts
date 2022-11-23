@@ -42,9 +42,8 @@ export default function useSignIn() {
           }),
         );
       })
-      .catch(e => {
+      .catch(_ => {
         setSubmitting(false);
-        console.log(e.message);
       });
   };
 

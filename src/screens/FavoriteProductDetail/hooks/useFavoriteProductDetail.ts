@@ -57,7 +57,6 @@ export default function useFavoriteProductDetail() {
   const handleGetDetail = () => {
     getProductDetail(route.params.id)
       .then(r => {
-        console.log(r);
         let auxCoords: CoordsTypes[] = [];
         r.stores.map(store => {
           auxCoords.push({

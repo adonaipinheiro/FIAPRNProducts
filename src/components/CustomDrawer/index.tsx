@@ -21,7 +21,7 @@ export default function CustomDrawer(props: DrawerContentComponentProps) {
       {...props}
       contentContainerStyle={styles({}).container}>
       <View style={styles({}).userContainer}>
-        <Avatar label={userName} autoColor />
+        <Avatar label={userName} color="#2f9702" />
         <Text style={styles({}).userText}>Olá, {userName}!</Text>
       </View>
       <DrawerItemList {...props} />

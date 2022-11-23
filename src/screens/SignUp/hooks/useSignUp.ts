@@ -59,9 +59,8 @@ export default function useSignUp() {
           }),
         );
       })
-      .catch(e => {
+      .catch(_ => {
         setSubmitting(false);
-        console.log(e);
       });
   };
 
